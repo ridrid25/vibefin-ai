@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07110e">
+  <meta name="description" content="NEON//LAB — интерактивная витрина современных UI-компонентов.">
+  <title>NEON//LAB — интерактивный UI Kit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07110e;
+      --bg-soft: #0a1713;
+      --panel: rgba(14, 31, 25, .72);
+      --panel-strong: #10231c;
+      --line: rgba(104, 255, 190, .18);
+      --line-strong: rgba(104, 255, 190, .42);
+      --neon: #68ffbe;
+      --neon-dark: #08150f;
+      --cyan: #75e9ff;
+      --text: #edfdf5;
+      --muted: #93ada0;
+      --danger: #ff6f91;
+      --warning: #ffd166;
+      --radius: 18px;
+      --shadow: 0 26px 90px rgba(0, 0, 0, .34);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 76% 6%, rgba(104, 255, 190, .10), transparent 26rem),
+        radial-gradient(circle at 10% 42%, rgba(117, 233, 255, .07), transparent 24rem),
+        var(--bg);
+      font-family: Inter, system-ui, sans-serif;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .34;
+      background-image:
+        linear-gradient(rgba(104, 255, 190, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(104, 255, 190, .025) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: linear-gradient(to bottom, black, transparent 80%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    img { display: block; width: 100%; }
+
+    .container { width: min(1160px, calc(100% - 40px)); margin-inline: auto; }
+    .mono { font-family: "JetBrains Mono", monospace; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--neon);
+      font: 700 12px/1.2 "JetBrains Mono", monospace;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: currentColor; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid rgba(104, 255, 190, .12);
+      background: rgba(7, 17, 14, .82);
+      backdrop-filter: blur(18px);
+    }
+    .nav { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font: 800 17px "JetBrains Mono", monospace; }
+    .brand-mark {
+      width: 34px; height: 34px; border: 1px solid var(--line-strong); border-radius: 10px;
+      display: grid; place-items: center; color: var(--neon); box-shadow: inset 0 0 18px rgba(104,255,190,.08);
+    }
+    .brand span:last-child { color: var(--neon); }
+    .nav-links { display: flex; align-items: center; gap: 28px; color: #b7cabf; font-size: 14px; }
+    .nav-links a { position: relative; padding: 10px 0; }
+    .nav-links a::after { content: ""; position: absolute; left: 0; right: 100%; bottom: 4px; height: 1px; background: var(--neon); transition: right .25s ease; }
+    .nav-links a:hover::after, .nav-links a:focus-visible::after { right: 0; }
+    .nav-status { display: inline-flex; align-items: center; gap: 8px; color: var(--neon); font: 600 11px "JetBrains Mono", monospace; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--neon); box-shadow: 0 0 0 5px rgba(104,255,190,.08), 0 0 16px var(--neon); animation: pulse 2s infinite; }
+    .burger { display: none; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); cursor: pointer; }
+    .burger span, .burger span::before, .burger span::after { display: block; width: 18px; height: 1px; margin: auto; background: var(--text); transition: .25s ease; }
+    .burger span { position: relative; }
+    .burger span::before, .burger span::after { content: ""; position: absolute; left: 0; }
+    .burger span::before { top: -6px; } .burger span::after { top: 6px; }
+
+    .hero { position: relative; padding: 96px 0 72px; }
+    .hero-grid { display: grid; grid-template-columns: 1.08fr .92fr; align-items: center; gap: 72px; }
+    .hero h1 { max-width: 760px; margin: 18px 0 22px; font-size: clamp(45px, 6vw, 78px); line-height: .98; letter-spacing: -.065em; }
+    .hero h1 span { color: var(--neon); text-shadow: 0 0 34px rgba(104,255,190,.22); }
+    .hero-copy { max-width: 630px; margin: 0; color: #a9beb2; font-size: clamp(17px, 2vw, 20px); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+    .btn {
+      min-height: 48px; padding: 0 20px; border: 1px solid transparent; border-radius: 13px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      font-weight: 700; cursor: pointer; transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0) scale(.98); }
+    .btn:focus-visible, input:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+    .btn-primary { background: var(--neon); color: var(--neon-dark); box-shadow: 0 12px 34px rgba(104,255,190,.18); }
+    .btn-primary:hover { box-shadow: 0 16px 42px rgba(104,255,190,.30); }
+    .btn-outline { border-color: var(--line-strong); background: rgba(104,255,190,.035); }
+    .btn-outline:hover { border-color: var(--neon); background: rgba(104,255,190,.08); }
+    .btn-ghost { border-color: var(--line); background: transparent; color: #c3d6cc; }
+    .btn:disabled { opacity: .36; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn .spinner { width: 15px; height: 15px; border: 2px solid rgba(7,17,14,.25); border-top-color: var(--neon-dark); border-radius: 50%; animation: spin .7s linear infinite; }
+
+    .terminal {
+      position: relative; padding: 20px; border: 1px solid var(--line); border-radius: 24px;
+      background: linear-gradient(155deg, rgba(18,40,32,.92), rgba(7,17,14,.86));
+      box-shadow: var(--shadow), inset 0 1px rgba(255,255,255,.04);
+    }
+    .terminal::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; background: linear-gradient(130deg, rgba(104,255,190,.22), transparent 25%, transparent 75%, rgba(117,233,255,.12)); mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; padding: 1px; }
+    .terminal-top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .terminal-dots { display: flex; gap: 6px; }
+    .terminal-dots i { width: 8px; height: 8px; border-radius: 50%; background: #29483b; }
+    .terminal-dots i:first-child { background: var(--danger); } .terminal-dots i:nth-child(2) { background: var(--warning); } .terminal-dots i:last-child { background: var(--neon); }
+    .terminal-label { color: var(--muted); font: 600 10px "JetBrains Mono", monospace; letter-spacing: .1em; }
+    .terminal-body { padding: 24px 4px 8px; }
+    .code-line { display: grid; grid-template-columns: 25px 1fr; gap: 10px; color: #bed1c7; font: 500 12px/1.9 "JetBrains Mono", monospace; }
+    .code-line b { color: #46675a; font-weight: 500; } .code-line em { color: var(--cyan); font-style: normal; } .code-line strong { color: var(--neon); }
+    .terminal-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 24px; }
+    .metric { padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: rgba(104,255,190,.035); }
+    .metric b { display: block; color: var(--neon); font: 700 19px "JetBrains Mono", monospace; }
+    .metric span { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+
+    .section { padding: 82px 0; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 34px; }
+    .section h2 { margin: 10px 0 0; font-size: clamp(31px, 4vw, 50px); line-height: 1.08; letter-spacing: -.04em; }
+    .section-note { max-width: 420px; margin: 0; color: var(--muted); }
+    .panel { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); box-shadow: inset 0 1px rgba(255,255,255,.025); backdrop-filter: blur(16px); }
+    .component-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .component-card { padding: 24px; min-height: 230px; }
+    .component-card h3 { margin: 0 0 6px; font-size: 17px; }
+    .component-card > p { margin: 0 0 24px; color: var(--muted); font-size: 13px; }
+    .span-7 { grid-column: span 7; } .span-5 { grid-column: span 5; } .span-4 { grid-column: span 4; } .span-8 { grid-column: span 8; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; color: #b9cec2; font-size: 12px; }
+
+    .field { position: relative; margin-top: 18px; }
+    .field input {
+      width: 100%; height: 52px; padding: 17px 15px 6px; border: 1px solid var(--line); border-radius: 12px;
+      color: var(--text); background: rgba(3,11,8,.52); transition: border .2s, box-shadow .2s;
+    }
+    .field label { position: absolute; left: 15px; top: 16px; color: var(--muted); font-size: 13px; pointer-events: none; transition: .2s; }
+    .field input:focus, .field input:not(:placeholder-shown) { border-color: var(--line-strong); box-shadow: 0 0 0 4px rgba(104,255,190,.05); }
+    .field input:focus + label, .field input:not(:placeholder-shown) + label { top: 6px; color: var(--neon); font-size: 9px; letter-spacing: .06em; text-transform: uppercase; }
+    .field-error { min-height: 18px; margin: 5px 2px 0; color: var(--danger); font-size: 11px; }
+    .search-wrap { position: relative; }
+    .search-wrap::before { content: "⌕"; position: absolute; left: 14px; top: 11px; z-index: 1; color: var(--neon); font-size: 20px; }
+    .search-wrap input { padding-left: 42px; padding-top: 8px; }
+
+    .choice-list { display: grid; gap: 13px; }
+    .choice { display: flex; align-items: center; gap: 11px; color: #c8dbd1; cursor: pointer; }
+    .choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .check-ui, .radio-ui { width: 20px; height: 20px; border: 1px solid var(--line-strong); display: grid; place-items: center; transition: .2s; }
+    .check-ui { border-radius: 6px; } .radio-ui { border-radius: 50%; }
+    .check-ui::after { content: "✓"; color: var(--neon-dark); font-size: 12px; font-weight: 900; opacity: 0; transform: scale(.4); transition: .2s; }
+    .radio-ui::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--neon); opacity: 0; transform: scale(.2); transition: .2s; }
+    .choice input:checked + .check-ui { background: var(--neon); border-color: var(--neon); }
+    .choice input:checked + .check-ui::after, .choice input:checked + .radio-ui::after { opacity: 1; transform: scale(1); }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .toggle { position: relative; width: 48px; height: 27px; flex: 0 0 auto; }
+    .toggle input { position: absolute; opacity: 0; }
+    .toggle-ui { position: absolute; inset: 0; border-radius: 999px; border: 1px solid var(--line-strong); background: #07110e; transition: .25s; cursor: pointer; }
+    .toggle-ui::after { content: ""; position: absolute; width: 19px; height: 19px; left: 3px; top: 3px; border-radius: 50%; background: #759187; transition: .25s; }
+    .toggle input:checked + .toggle-ui { background: rgba(104,255,190,.16); border-color: var(--neon); }
+    .toggle input:checked + .toggle-ui::after { transform: translateX(21px); background: var(--neon); box-shadow: 0 0 14px rgba(104,255,190,.65); }
+
+    .range-head { display: flex; justify-content: space-between; align-items: center; margin: 8px 0 20px; }
+    .range-value { color: var(--neon); font: 700 28px "JetBrains Mono", monospace; }
+    input[type="range"] { width: 100%; height: 6px; appearance: none; border-radius: 99px; background: linear-gradient(90deg, var(--neon) 0 62%, #1e392e 62%); outline: none; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border: 3px solid var(--bg); border-radius: 50%; background: var(--neon); box-shadow: 0 0 0 1px var(--neon), 0 0 18px rgba(104,255,190,.45); cursor: grab; }
+    .progress-shell { height: 10px; margin: 20px 0 16px; border: 1px solid var(--line); border-radius: 99px; padding: 2px; background: #07110e; overflow: hidden; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--neon), var(--cyan)); box-shadow: 0 0 18px rgba(104,255,190,.4); }
+    .progress-bar.run { animation: load 3s cubic-bezier(.2,.75,.25,1) forwards; }
+
+    .product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .product-card { overflow: hidden; transition: transform .25s ease, border-color .25s ease; }
+    .product-card:hover { transform: translateY(-6px); border-color: var(--line-strong); }
+    .product-image { aspect-ratio: 16/10; overflow: hidden; background: #10231c; }
+    .product-image img { height: 100%; object-fit: cover; filter: saturate(.72) contrast(1.05); transition: transform .5s ease, filter .5s ease; }
+    .product-card:hover img { transform: scale(1.055); filter: saturate(1) contrast(1.05); }
+    .product-content { padding: 21px; }
+    .product-top { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+    .product-top h3 { margin: 0; font-size: 18px; } .product-price { color: var(--neon); font: 700 14px "JetBrains Mono", monospace; white-space: nowrap; }
+    .product-content p { color: var(--muted); font-size: 13px; }
+
+    .gallery { display: grid; grid-template-columns: 1.2fr .8fr .8fr; grid-template-rows: 200px 200px; gap: 12px; }
+    .gallery-item { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: #10231c; }
+    .gallery-item:first-child { grid-row: 1 / 3; }
+    .gallery-item img { height: 100%; object-fit: cover; filter: grayscale(.35) saturate(.7); transition: transform .55s ease, filter .55s ease; }
+    .gallery-item::after { content: attr(data-label); position: absolute; left: 14px; bottom: 12px; padding: 6px 9px; border: 1px solid rgba(104,255,190,.3); border-radius: 8px; color: var(--neon); background: rgba(7,17,14,.78); font: 600 10px "JetBrains Mono", monospace; letter-spacing: .06em; }
+    .gallery-item:hover img { transform: scale(1.08); filter: grayscale(0) saturate(1); }
+
+    .login-layout { display: grid; grid-template-columns: .95fr 1.05fr; gap: 16px; }
+    .login-panel, .profile-panel { padding: 28px; }
+    .login-panel h3, .profile-panel h3 { margin-top: 0; }
+    .form-actions { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+    .profile-preview { min-height: 100%; display: grid; align-content: center; text-align: center; }
+    .avatar { width: 76px; height: 76px; margin: 0 auto 18px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: 22px; color: var(--neon); background: rgba(104,255,190,.06); font: 800 23px "JetBrains Mono", monospace; box-shadow: 0 0 40px rgba(104,255,190,.08); }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 60; padding: 20px; display: grid; place-items: center; background: rgba(1,8,6,.78); backdrop-filter: blur(12px); opacity: 0; visibility: hidden; transition: .25s; }
+    .modal-backdrop.open { opacity: 1; visibility: visible; }
+    .modal { position: relative; width: min(460px, 100%); padding: 30px; border: 1px solid var(--line-strong); border-radius: 22px; background: #0c1d17; box-shadow: 0 30px 120px rgba(0,0,0,.6); transform: translateY(16px) scale(.96); transition: .25s; }
+    .modal-backdrop.open .modal { transform: none; }
+    .modal-close { position: absolute; right: 14px; top: 14px; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 11px; color: var(--muted); background: transparent; cursor: pointer; }
+    .modal h3 { font-size: 25px; margin: 14px 0 6px; } .modal p { color: var(--muted); }
+    .modal-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 24px; }
+    .modal-stats div { padding: 12px 8px; border: 1px solid var(--line); border-radius: 11px; text-align: center; }
+    .modal-stats b { display: block; color: var(--neon); font: 700 18px "JetBrains Mono", monospace; } .modal-stats span { color: var(--muted); font-size: 10px; }
+
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 80; max-width: min(370px, calc(100% - 44px)); padding: 15px 17px; border: 1px solid var(--line-strong); border-radius: 13px; background: #10251d; box-shadow: 0 20px 60px rgba(0,0,0,.5); display: flex; align-items: center; gap: 11px; opacity: 0; transform: translateY(16px); pointer-events: none; transition: .3s; }
+    .toast::before { content: "✓"; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; color: var(--neon-dark); background: var(--neon); font-weight: 900; }
+    .toast.show { opacity: 1; transform: none; }
+
+    footer { padding: 34px 0 42px; border-top: 1px solid var(--line); color: var(--muted); }
+    .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; font-size: 12px; }
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 50% { opacity: .55; box-shadow: 0 0 0 8px rgba(104,255,190,0), 0 0 8px var(--neon); } }
+    @keyframes load { from { width: 0; } to { width: 100%; } }
+
+    @media (max-width: 920px) {
+      .hero { padding-top: 72px; }
+      .hero-grid, .login-layout { grid-template-columns: 1fr; gap: 42px; }
+      .hero-copy { max-width: 720px; }
+      .terminal { max-width: 660px; }
+      .span-7, .span-5, .span-4, .span-8 { grid-column: span 6; }
+      .product-grid { grid-template-columns: 1fr 1fr; }
+      .product-card:last-child { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 700px) {
+      .container { width: min(100% - 28px, 1160px); }
+      .nav { min-height: 66px; }
+      .burger { display: block; }
+      .nav-status { margin-left: auto; }
+      .nav-links { position: fixed; left: 14px; right: 14px; top: 75px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; display: grid; gap: 4px; background: #0a1914; box-shadow: var(--shadow); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: .25s; }
+      .nav-links.open { opacity: 1; visibility: visible; transform: none; }
+      .nav-links a { padding: 12px; border-radius: 9px; }
+      .nav-links a:hover { background: rgba(104,255,190,.06); }
+      .hero { padding: 60px 0 48px; }
+      .hero h1 { font-size: clamp(40px, 13vw, 61px); }
+      .section { padding: 62px 0; }
+      .section-head { display: block; }
+      .section-note { margin-top: 16px; }
+      .component-grid { display: grid; grid-template-columns: 1fr; }
+      .span-7, .span-5, .span-4, .span-8 { grid-column: 1; }
+      .product-grid { grid-template-columns: 1fr; }
+      .product-card:last-child { grid-column: auto; }
+      .gallery { grid-template-columns: 1fr 1fr; grid-template-rows: 260px 160px 160px; }
+      .gallery-item:first-child { grid-column: 1 / -1; grid-row: auto; }
+      .terminal-metrics, .modal-stats { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .footer-row { align-items: start; flex-direction: column; }
+    }
+
+    @media (max-width: 430px) {
+      .brand { font-size: 14px; }
+      .brand-mark { width: 31px; height: 31px; }
+      .nav-status span:last-child { display: none; }
+      .hero-actions .btn { width: 100%; }
+      .terminal { padding: 15px; border-radius: 19px; }
+      .code-line { font-size: 10px; gap: 5px; }
+      .terminal-metrics { gap: 5px; }
+      .metric { padding: 9px 6px; }
+      .metric b { font-size: 15px; }
+      .component-card { padding: 20px; }
+      .button-row .btn { width: 100%; }
+      .gallery { grid-template-columns: 1fr; grid-template-rows: 240px repeat(4, 160px); }
+      .gallery-item:first-child { grid-column: auto; }
+      .form-actions { align-items: stretch; flex-direction: column; }
+      .modal { padding: 24px 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="NEON LAB — на главную"><span class="brand-mark">N</span><span>NEON//<span>LAB</span></span></a>
+      <nav class="nav-links" id="navLinks" aria-label="Основная навигация">
+        <a href="#components">Компоненты</a><a href="#products">Карточки</a><a href="#gallery">Галерея</a><a href="#form">Форма</a>
+      </nav>
+      <div class="nav-status"><i class="status-dot"></i><span>SYSTEM ONLINE</span></div>
+      <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false"><span></span></button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">Interactive interface system</span>
+          <h1>Интерфейс, который <span>реагирует</span>.</h1>
+          <p class="hero-copy">Живая витрина базовых UI-компонентов: от микровзаимодействий до валидации форм — в единой киберсистеме.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#components">Исследовать систему <span>→</span></a>
+            <button class="btn btn-outline" data-open-modal>Открыть профиль</button>
+          </div>
+        </div>
+        <div class="terminal reveal" aria-label="Демонстрационная панель системы">
+          <div class="terminal-top"><div class="terminal-dots"><i></i><i></i><i></i></div><span class="terminal-label">UI_CORE / v3.1</span></div>
+          <div class="terminal-body">
+            <div class="code-line"><b>01</b><span><em>const</em> interface = <strong>"adaptive"</strong>;</span></div>
+            <div class="code-line"><b>02</b><span><em>const</em> status = <strong>"online"</strong>;</span></div>
+            <div class="code-line"><b>03</b><span>motion.<em>init</em>({ subtle: <strong>true</strong> });</span></div>
+            <div class="code-line"><b>04</b><span>accessibility.<em>check</em>();</span></div>
+            <div class="code-line"><b>05</b><span>// system ready_</span></div>
+            <div class="terminal-metrics">
+              <div class="metric"><b>12</b><span>модулей</span></div><div class="metric"><b>100%</b><span>responsive</span></div><div class="metric"><b>0</b><span>errors</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="components">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="eyebrow">01 / Core controls</span><h2>Базовые компоненты</h2></div><p class="section-note">Каждый элемент имеет состояния, обратную связь и корректную работу с клавиатурой.</p></div>
+        <div class="component-grid">
+          <article class="panel component-card span-7 reveal">
+            <h3>Кнопки и состояния</h3><p>Hover, active, disabled и асинхронная загрузка.</p>
+            <div class="button-row">
+              <button class="btn btn-primary">Основная</button><button class="btn btn-outline">Контурная</button><button class="btn btn-ghost">◎ С иконкой</button><button class="btn btn-primary" id="loadingButton">Запустить</button><button class="btn btn-outline" disabled>Недоступна</button>
+            </div>
+          </article>
+          <article class="panel component-card span-5 reveal">
+            <h3>Умный поиск</h3><p>Поле с фокусом, подсказкой и результатом.</p>
+            <div class="field search-wrap"><input id="searchInput" type="search" placeholder=" " autocomplete="off"><label for="searchInput">Найти компонент</label></div>
+            <div style="margin-top:14px"><span class="chip" id="searchResult">⌁ Введите запрос</span></div>
+          </article>
+          <article class="panel component-card span-4 reveal">
+            <h3>Выбор параметров</h3><p>Кастомные контролы без стандартного вида браузера.</p>
+            <div class="choice-list">
+              <label class="choice"><input type="checkbox" checked><span class="check-ui"></span><span>Анимации интерфейса</span></label>
+              <label class="choice"><input type="radio" name="density" checked><span class="radio-ui"></span><span>Комфортная плотность</span></label>
+              <label class="choice"><input type="radio" name="density"><span class="radio-ui"></span><span>Компактная плотность</span></label>
+            </div>
+            <div class="toggle-row"><span>Неоновое свечение</span><label class="toggle"><input type="checkbox" checked><span class="toggle-ui"></span></label></div>
+          </article>
+          <article class="panel component-card span-4 reveal">
+            <h3>Интенсивность</h3><p>Range-ползунок обновляет показатель в реальном времени.</p>
+            <div class="range-head"><span class="mono">GLOW_LEVEL</span><output class="range-value" id="rangeValue">62</output></div>
+            <input type="range" id="rangeInput" min="0" max="100" value="62" aria-label="Интенсивность свечения">
+          </article>
+          <article class="panel component-card span-4 reveal">
+            <h3>Загрузка системы</h3><p>Прогресс запускается при открытии и повторно по клику.</p>
+            <div class="progress-shell"><div class="progress-bar" id="progressBar"></div></div>
+            <button class="btn btn-outline" id="restartProgress">Повторить загрузку</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="products">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="eyebrow">02 / Product cards</span><h2>Модули системы</h2></div><p class="section-note">Карточки объединяют изображение, иерархию контента, цену и понятное действие.</p></div>
+        <div class="product-grid">
+          <article class="panel product-card reveal"><div class="product-image"><img src="https://picsum.photos/seed/neon-interface/900/600" alt="Рабочее пространство с экраном"></div><div class="product-content"><div class="product-top"><h3>Motion Core</h3><span class="product-price">₽ 8 900</span></div><p>Библиотека плавных анимаций и микровзаимодействий.</p><button class="btn btn-outline">Подробнее</button></div></article>
+          <article class="panel product-card reveal"><div class="product-image"><img src="https://picsum.photos/seed/digital-system/900/600" alt="Цифровая система управления"></div><div class="product-content"><div class="product-top"><h3>Form Engine</h3><span class="product-price">₽ 6 400</span></div><p>Валидация, состояния и доступные формы для продукта.</p><button class="btn btn-outline">Подробнее</button></div></article>
+          <article class="panel product-card reveal"><div class="product-image"><img src="https://picsum.photos/seed/cyber-dashboard/900/600" alt="Современный цифровой дашборд"></div><div class="product-content"><div class="product-top"><h3>Data Visual</h3><span class="product-price">₽ 12 700</span></div><p>Компоненты показателей и управленческих панелей.</p><button class="btn btn-outline">Подробнее</button></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="gallery">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="eyebrow">03 / Visual archive</span><h2>Галерея интерфейсов</h2></div><p class="section-note">Изображения реагируют на наведение, сохраняя спокойную композицию.</p></div>
+        <div class="gallery reveal">
+          <div class="gallery-item" data-label="CONTROL CENTER"><img src="https://picsum.photos/seed/green-control/1000/1200" alt="Центр цифрового управления"></div>
+          <div class="gallery-item" data-label="MOTION"><img src="https://picsum.photos/seed/motion-lab/900/600" alt="Абстрактная цифровая композиция"></div>
+          <div class="gallery-item" data-label="SYSTEM"><img src="https://picsum.photos/seed/system-grid/900/600" alt="Система из световых линий"></div>
+          <div class="gallery-item" data-label="SIGNAL"><img src="https://picsum.photos/seed/neon-signal/900/600" alt="Неоновый сигнал"></div>
+          <div class="gallery-item" data-label="NETWORK"><img src="https://picsum.photos/seed/digital-network/900/600" alt="Цифровая сеть"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="form">
+      <div class="container">
+        <div class="section-head reveal"><div><span class="eyebrow">04 / Feedback loop</span><h2>Форма и профиль</h2></div><p class="section-note">Валидация показывает ошибку рядом с полем, а успешная отправка подтверждается toast-сообщением.</p></div>
+        <div class="login-layout">
+          <form class="panel login-panel reveal" id="loginForm" novalidate>
+            <h3>Вход в систему</h3>
+            <div class="field"><input id="email" type="email" placeholder=" " autocomplete="email"><label for="email">E-mail</label><div class="field-error" id="emailError"></div></div>
+            <div class="field"><input id="password" type="password" placeholder=" " autocomplete="current-password"><label for="password">Пароль</label><div class="field-error" id="passwordError"></div></div>
+            <div class="form-actions"><button class="btn btn-primary" type="submit" id="submitButton">Войти</button><span class="chip">SSL / protected</span></div>
+          </form>
+          <article class="panel profile-panel profile-preview reveal"><div class="avatar">TR</div><span class="eyebrow" style="justify-content:center">User profile</span><h3>Татьяна Рид</h3><p>Вайб-архитектор · проектирует цифровые продукты для финансового управления.</p><button class="btn btn-outline" data-open-modal>Посмотреть профиль</button></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="container footer-row"><a class="brand" href="#top"><span class="brand-mark">N</span><span>NEON//<span>LAB</span></span></a><span>Учебный интерактивный UI Kit · 2026</span><span class="mono">STATUS: STABLE</span></div></footer>
+
+  <div class="modal-backdrop" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal"><button class="modal-close" id="modalClose" aria-label="Закрыть окно">×</button><div class="avatar">TR</div><span class="eyebrow">Access granted</span><h3 id="modalTitle">Профиль архитектора</h3><p>Создаёт понятные цифровые системы, в которых аналитика, интерфейс и бизнес-логика работают как одно целое.</p><div class="modal-stats"><div><b>12</b><span>проектов</span></div><div><b>98%</b><span>качество</span></div><div><b>24/7</b><span>онлайн</span></div></div></div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastText">Данные успешно отправлены</span></div>
+
+  <script>
+    const burger = document.querySelector('#burger');
+    const navLinks = document.querySelector('#navLinks');
+    burger.addEventListener('click', () => {
+      const open = navLinks.classList.toggle('open');
+      burger.setAttribute('aria-expanded', String(open));
+      burger.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+    });
+    navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    }));
+
+    const loadingButton = document.querySelector('#loadingButton');
+    loadingButton.addEventListener('click', () => {
+      loadingButton.disabled = true;
+      loadingButton.innerHTML = '<i class="spinner"></i> Загрузка';
+      setTimeout(() => {
+        loadingButton.disabled = false;
+        loadingButton.textContent = 'Готово ✓';
+        showToast('Компонент успешно запущен');
+        setTimeout(() => loadingButton.textContent = 'Запустить', 1500);
+      }, 1400);
+    });
+
+    const searchInput = document.querySelector('#searchInput');
+    const searchResult = document.querySelector('#searchResult');
+    searchInput.addEventListener('input', () => {
+      const value = searchInput.value.trim();
+      searchResult.textContent = value ? `⌁ Найдено: ${value}` : '⌁ Введите запрос';
+    });
+
+    const rangeInput = document.querySelector('#rangeInput');
+    const rangeValue = document.querySelector('#rangeValue');
+    function updateRange() {
+      rangeValue.value = rangeInput.value;
+      rangeValue.textContent = rangeInput.value;
+      rangeInput.style.background = `linear-gradient(90deg, var(--neon) 0 ${rangeInput.value}%, #1e392e ${rangeInput.value}%)`;
+    }
+    rangeInput.addEventListener('input', updateRange);
+    updateRange();
+
+    const progressBar = document.querySelector('#progressBar');
+    function runProgress() {
+      progressBar.classList.remove('run');
+      void progressBar.offsetWidth;
+      progressBar.classList.add('run');
+    }
+    document.querySelector('#restartProgress').addEventListener('click', runProgress);
+    setTimeout(runProgress, 350);
+
+    const modal = document.querySelector('#profileModal');
+    const modalClose = document.querySelector('#modalClose');
+    let lastFocused = null;
+    function openModal() {
+      lastFocused = document.activeElement;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => modalClose.focus(), 50);
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      if (lastFocused) lastFocused.focus();
+    }
+    document.querySelectorAll('[data-open-modal]').forEach(button => button.addEventListener('click', openModal));
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', event => { if (event.target === modal) closeModal(); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+    const toast = document.querySelector('#toast');
+    const toastText = document.querySelector('#toastText');
+    let toastTimer;
+    function showToast(message) {
+      toastText.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    const form = document.querySelector('#loginForm');
+    const email = document.querySelector('#email');
+    const password = document.querySelector('#password');
+    const emailError = document.querySelector('#emailError');
+    const passwordError = document.querySelector('#passwordError');
+    const submitButton = document.querySelector('#submitButton');
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      emailError.textContent = '';
+      passwordError.textContent = '';
+      let valid = true;
+      if (!email.value.trim() || !/^\S+@\S+\.\S+$/.test(email.value)) { emailError.textContent = 'Введите корректный e-mail'; valid = false; }
+      if (password.value.length < 6) { passwordError.textContent = 'Минимум 6 символов'; valid = false; }
+      if (!valid) return;
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<i class="spinner"></i> Проверка';
+      setTimeout(() => {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Войти';
+        showToast('Доступ подтверждён. Добро пожаловать!');
+        form.reset();
+      }, 1200);
+    });
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
+  </script>
+</body>
+</html>
